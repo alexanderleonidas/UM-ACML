@@ -20,3 +20,11 @@ print("\nTesting the trained network:")
 for i, test_input in enumerate(training_inputs):
     predicted_output = nn.predict(test_input.reshape(1, -1))
     print(f"Input: {test_input} Predicted Output: {np.round(predicted_output.flatten())}")
+
+# Gradient check
+print("\nPerforming gradient check:")
+nn.gradient_check(training_inputs, training_outputs)
+
+# Plot weight heatmaps
+print("\nVisualizing weight heatmaps:")
+nn.plot_weight_heatmaps()
