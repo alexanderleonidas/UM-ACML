@@ -7,6 +7,7 @@ class NeuralNetwork():
         self.hidden_size = hidden_size
         self.output_size = output_size
         self.learning_rate = learning_rate
+        self.loss_history = []
         self.initialize()
     
     def initialize(self):
@@ -55,6 +56,7 @@ class NeuralNetwork():
             # Forward and backpropagation in a single batch
             self.forward_propagate(inputs)
             loss = self.backpropagate(inputs, target_outputs)
+            self.loss_history.append(loss)  # Store loss for plotting
 
             # Print loss every 1000 epochs
             if epoch % 1000 == 0:
@@ -79,10 +81,10 @@ class NeuralNetwork():
                 # Perturb weight by a small amount epsilon
                 original_value = self.weights_input_hidden[i, j]
                 self.weights_input_hidden[i, j] = original_value + epsilon
-                loss_plus = np.mean((self.forward_propagate(inputs) - target_outputs) ** 2)
+                loss_plus = np.mean(np.square((self.forward_propagate(inputs) - target_outputs)))
                 
                 self.weights_input_hidden[i, j] = original_value - epsilon
-                loss_minus = np.mean((self.forward_propagate(inputs) - target_outputs) ** 2)
+                loss_minus = np.mean(np.square((self.forward_propagate(inputs) - target_outputs)))
                 
                 # Restore original weight value
                 self.weights_input_hidden[i, j] = original_value
@@ -99,6 +101,15 @@ class NeuralNetwork():
                     print(f"Numerical: {numerical_gradient}, Backprop: {backprop_gradient}, Difference: {difference}")
                 else:
                     print(f"Gradient check passed at ({i}, {j}).")
+
+    def plot_loss(self):
+        plt.figure(figsize=(10, 5))
+        plt.plot(self.loss_history, label="Training Loss")
+        plt.xlabel("Epochs")
+        plt.ylabel("Loss (Mean Squared Error)")
+        plt.title("Loss Over Time")
+        plt.legend()
+        plt.show()
 
     def plot_weight_heatmaps(self):
         # Visualize the learned weights as heatmaps.

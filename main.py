@@ -25,6 +25,10 @@ for i, test_input in enumerate(training_inputs):
 print("\nPerforming gradient check:")
 nn.gradient_check(training_inputs, training_outputs)
 
+# Plot loss
+print("\nVisualising loss:")
+nn.plot_loss()
+
 # Plot weight heatmaps
 print("\nVisualizing weight heatmaps:")
 nn.plot_weight_heatmaps()
