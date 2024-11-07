@@ -1,9 +1,10 @@
 from layer import Layer
 from activation import Activation
+from const import *
 
 class NerualNet:
     def __init__(self):
-        self.network = [Layer(8,3), Activation(), Layer(3,8), Activation()]
+        self.network = [Layer(INPUT_SIZE,HIDDEN_SIZE), Activation(), Layer(HIDDEN_SIZE,OUTPUT_SIZE), Activation()]
         self.loss_history = []
     
     def train(self, x, y, loss_func, learning_rate=0.1, epochs=100000):
