@@ -15,9 +15,3 @@ class Layer:
         self.dbias = np.sum(dvalues, axis=0, keepdims=True)
         # Gradient on inputs
         self.dinputs = np.dot(dvalues, self.weights.T)
-
-    def get_parameters(self):
-        return [
-            ('weights', self.weights, self.dweights),
-            ('bias', self.bias, self.dbias)
-        ]
