@@ -53,7 +53,7 @@ if __name__ == "__main__":
     print(f"\nTraining completed with final loss: {final_loss}")
 
     # Test the trained network
-    output = x
+    output = rng.random.shuffle(x)
     for layer in nn.network:
         layer.forward(output)
         output = layer.output
