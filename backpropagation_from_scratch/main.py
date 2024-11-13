@@ -4,6 +4,9 @@ from neuralnet import NerualNet
 from loss import Loss, MSE
 import matplotlib.pyplot as plt
 
+# Radnom generator for reproducibility
+rng = np.random.default_rng(SEED)
+
 def plot_loss(loss):
     plt.figure(figsize=(10, 5))
     plt.plot(loss, label="Training Loss")
@@ -43,22 +46,24 @@ if __name__ == "__main__":
     nn = NerualNet()
     loss_func = MSE()
     
-    plot_weight_heatmaps(nn)
+    # plot_weight_heatmaps(nn)
 
     final_loss = nn.train(x, y, loss_func)
 
-    plot_loss(nn.loss_history)
-    plot_weight_heatmaps(nn)
+    # plot_loss(nn.loss_history)
+    # plot_weight_heatmaps(nn)
     
     print(f"\nTraining completed with final loss: {final_loss}")
 
     # Test the trained network
-    output = rng.random.shuffle(x)
+    rng.shuffle(x)
+    output = x
+    y = x.copy()
     for layer in nn.network:
         layer.forward(output)
         output = layer.output
 
-    print("\nFinal loss:", loss_func.calculate(output, y))
+    print("\nTest loss:", loss_func.calculate(output, y))
     print("\nExample predictions:")
     for i in range(len(x)):
         print(f"Input {i}:")

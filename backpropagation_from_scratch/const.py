@@ -1,9 +1,7 @@
-import numpy as np
 
-# Radnom generator for reproducibility
-rng = np.random.default_rng(42)
+SEED = 42
 
-# Neural Network 
+# Neural Network
 
 INPUT_SIZE = 8
 HIDDEN_SIZE = 3

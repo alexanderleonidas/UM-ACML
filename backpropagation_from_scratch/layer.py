@@ -1,5 +1,9 @@
 import numpy as np
 from const import *
+
+# Radnom generator for reproducibility
+rng = np.random.default_rng(SEED)
+
 class Layer:
     def __init__(self, n_inputs, n_neurons):
         self.weights = 0.01 * rng.random((n_inputs, n_neurons))
