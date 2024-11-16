@@ -1,43 +1,33 @@
 import torch.nn as nn
 import torch.optim as optim
-from autoencoder import Autoencoder
+from simple_autoencoder import SimpleAutoencoder
+from fewer_channels_autoencoder import FewerChannelsAutoencoder
+from reduced_autoencoder import ReducedAutoencoder
+from lrare_latent_autoencoder import LargerLatentSpaceAutoencoder
 from utils import *
 from const import *
 
+# ---------------------------------- #
+# ----------- EXERCISE 1 ----------- #
+# ---------------------------------- #
 
 # Load a single batch for visualization
 batch_file = 'data_batch_1' # Change the batch file as needed
 train_loader, val_loader, test_loader = load_cifar_batch(batch_file)
 
 # Instantiate and set up the model
-autoencoder = Autoencoder().to(device)
+autoencoder = SimpleAutoencoder().to(device)
 criterion = nn.MSELoss()  # Mean squared error loss
 optimizer = optim.Adam(autoencoder.parameters(), lr=0.001)
 
 # Train the autoencoder
-train_loss_history = []
-for epoch in range(EPOCHS):
-    running_loss = 0.0
-    for data in train_loader:
-        inputs, _ = data
-        inputs = inputs.to(device)
+train_loss_history, val_loss_history = train_autoencoder(autoencoder, optimizer, criterion, train_loader, val_loader)
 
-        optimizer.zero_grad()
-        outputs = autoencoder(inputs)
-        loss = criterion(outputs, inputs)  # Compare reconstructed output to the input
-        loss.backward()
-        optimizer.step()
+# Plot the loss and validation loss
+plot_loss(train_loss_history, 'Simple Autoencoder Training Loss')
+plot_loss(val_loss_history, 'Simple Autoencoder Validation Loss')
 
-        running_loss += loss.item()
-
-    epoch_loss = running_loss / len(train_loader)
-    train_loss_history.append(epoch_loss)
-    print(f"Epoch {epoch + 1}/{EPOCHS}, Loss: {epoch_loss:.4f}")
-
-# Plot the Loss
-plot_loss(train_loss_history)
-
-# Evaluate on test set (optional)
+# Evaluate on test set
 test_loss = 0.0
 with torch.no_grad():
     for data in test_loader:
@@ -47,3 +37,48 @@ with torch.no_grad():
         test_loss += criterion(outputs, inputs).item()
 
 print(f"Test Loss: {test_loss / len(test_loader):.4f}")
+
+# Visualize the reconstruction of input images (optional)
+visualize_reconstruction(autoencoder, test_loader)
+
+# ---------------------------------- #
+# ----------- EXERCISE 2 ----------- #
+# ---------------------------------- #
+
+# Load a single batch for visualization
+batch_file = 'data_batch_2' # Change the batch file as needed
+train_loader, val_loader, test_loader = load_cifar_batch(batch_file)
+
+models = [
+    FewerChannelsAutoencoder().to(device),
+    ReducedAutoencoder().to(device),
+    LargerLatentSpaceAutoencoder().to(device)
+]
+criterion = nn.MSELoss()  # Mean squared error loss
+optimizers = [optim.Adam(model.parameters(), lr=0.001) for model in models]
+
+train_loss_history = []
+val_loss_history = []
+test_loss_history = []
+
+for model, optimizer in zip(models, optimizers):
+    loss, val_loss = train_autoencoder(model, optimizer, criterion, train_loader, val_loader)
+    train_loss_history.append(loss)
+    val_loss_history.append(val_loss)
+
+    # Evaluate on test set
+    test_loss = 0.0
+    with torch.no_grad():
+        for data in test_loader:
+            inputs, _ = data
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            test_loss += criterion(outputs, inputs).item()
+
+    test_loss_history.append(test_loss / len(test_loader))
+
+# Plot loss
+model_names = ['FewerChannelsAutoencoder', 'ReducedAutoencoder', 'LargerLatentSpaceAutoencoder']
+for i in range(3):
+    plot_loss(train_loss_history[i], model_names[i] + 'Training Loss')
+    plot_loss(val_loss_history[i], model_names[i] + 'Validation Loss')

@@ -1,9 +1,9 @@
 import torch.nn as nn
 from const import *
 
-class Autoencoder(nn.Module):
+class SimpleAutoencoder(nn.Module):
     def __init__(self):
-        super(Autoencoder, self).__init__()
+        super(SimpleAutoencoder, self).__init__()
         # Encoder
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 8, kernel_size=3, padding=1),  # 32x32x8
